@@ -418,35 +418,9 @@ let set_env (expr: lexpr) : lexpr =
 ;;
 
 let desguar_code (code: string) =
-    print_string code;
     let ast: lexpr = set_env @@ desugar @@ Parser_flow.program code in
-    print_string @@ s_expr ast ^ "\n"
+    s_expr ast
 ;;
-
-
-let code = "
-    var v = {'name': 'liwei', 'answer': 42}; 
-    var c = 5, b = 6;
-    print (v['name'])
-" in desguar_code code;;
-
-
-
-let code = "
-    var v = {'name': 'liwei', 'answer': 42}; 
-    v['name'] = 5;
-    print (v['name']);
-    delete v['name'];
-    print (v['name']);
-" in desguar_code code;
-
-
-let code = "
-    var x = {'a': 'b'};
-    x = {'x': 'x'};
-    print (x['x']);
-" in desguar_code code;;
-
 
 let code = "
     function proc(x) {
