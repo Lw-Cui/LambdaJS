@@ -1,0 +1,16 @@
+; This dune file configures and runs the tests.
+
+(executable
+  (name tests)
+  (modes byte)
+  (libraries
+    ounit2
+    desugar
+  ))
+
+; dune rule so command line "dune runtest" will run tests.
+; Note that all that command is doing is running the tests.exe binary.
+(rule
+ (alias runtest)
+ (action (chdir %{project_root}
+  (run ./test/tests.bc))))

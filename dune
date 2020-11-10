@@ -1,5 +1,0 @@
-(executable
- (name desugar)
- (modules desugar)
- (libraries ppx_deriving.runtime flow_parser)
-)
