@@ -123,6 +123,26 @@ let tests = "test suite for desugar" >::: [
 
     {| (let  ( ($global  (alloc  (object ) ) ) )   (let  ( (@Object_prototype  (alloc  (object ) ) ) )   (begin  (begin  (set! $global  (update-field  (deref $global)  "k"  (alloc  (object  ("$class" "Array")  ("0"  1.)  ("1" "liwei")  ("2"  3.) ) ) ) )  undefined)   (begin  (print-string  (prim->string  (get-field  (deref  (get-field  (deref $global)  "k") )  "1") ) )   (begin  (set!  (get-field  (deref $global)  "k")   (delete-field  (deref  (get-field  (deref $global)  "k") )  "1") )   (begin  (print-string  (prim->string  (get-field  (deref  (get-field  (deref $global)  "k") )  "1") ) )   (begin  (set!  (get-field  (deref $global)  "k")   (update-field  (deref  (get-field  (deref $global)  "k") )  "1"  5.) )   (begin  (begin  (set! $global  (update-field  (deref $global)  "c"  1.) )  undefined)   (begin  (print-string  (prim->string  (get-field  (deref  (get-field  (deref $global)  "k") )  "1") ) )  undefined) ) ) ) ) ) ) ) ) |}
   );
+
+  "array property idx" >:: (fun _ -> assert_equal
+    (desguar_code "
+      function proc(arr, pos) {
+          print (arr[pos]);
+      }
+
+      var k = [1, 'liwei', 3];
+      print (k[1]);
+      delete k[1];
+      print (k[1]);
+      k[1] = 42;
+      print (k[1]);
+      var c = 1;
+      print (k[c]);
+      proc (k, c);
+    ")
+
+    {| (let  ( ($global  (alloc  (object ) ) ) )   (let  ( (@Object_prototype  (alloc  (object ) ) ) )   (begin  (set! $global  (update-field  (deref $global)  "proc"  (lambda  (this arr pos)   (let  ( (arr  (alloc arr) )  (pos  (alloc pos) ) )   (label $return    (begin  (print-string  (prim->string  (get-field  (deref  (deref arr) )   (prim->string  (deref pos) ) ) ) )  undefined) ) ) ) ) )   (begin  (begin  (set! $global  (update-field  (deref $global)  "k"  (alloc  (object  ("$class" "Array")  ("0"  1.)  ("1" "liwei")  ("2"  3.) ) ) ) )  undefined)   (begin  (print-string  (prim->string  (get-field  (deref  (get-field  (deref $global)  "k") )  "1") ) )   (begin  (set!  (get-field  (deref $global)  "k")   (delete-field  (deref  (get-field  (deref $global)  "k") )  "1") )   (begin  (print-string  (prim->string  (get-field  (deref  (get-field  (deref $global)  "k") )  "1") ) )   (begin  (set!  (get-field  (deref $global)  "k")   (update-field  (deref  (get-field  (deref $global)  "k") )  "1"  42.) )   (begin  (print-string  (prim->string  (get-field  (deref  (get-field  (deref $global)  "k") )  "1") ) )   (begin  (begin  (set! $global  (update-field  (deref $global)  "c"  1.) )  undefined)   (begin  (print-string  (prim->string  (get-field  (deref  (get-field  (deref $global)  "k") )   (prim->string  (get-field  (deref $global)  "c") ) ) ) )   (begin  ( (get-field  (deref $global)  "proc")  $global (get-field  (deref $global)  "k")  (get-field  (deref $global)  "c") )  undefined) ) ) ) ) ) ) ) ) ) ) ) |}
+  );
 ]
 
 let _ = run_test_tt_main tests

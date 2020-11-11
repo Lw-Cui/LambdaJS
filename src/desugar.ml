@@ -1,3 +1,43 @@
+(* 
+    Reference
+    =========
+
+    Reference is the only way to access data in lambda js.
+
+    For example, global variable in javascript code 
+        var v = {'name': 'liwei', 'answer': 42} 
+
+    is transformed into a field within '$global'
+        {'$global': {'v': {'name': 'liwei', 'answer': 42} } }
+    To access variable v, the reference to '$global' (LiD '$global')  used be used first, 
+    , then LDeref & GetField, which are the operators to de-reference & retrieve field respectively.
+
+    For example, LId '$global' is the reference to '$global'.
+    LDeref (LId '$global') gives you the concrete structure {'v': {'name': 'liwei', 'answer': 42} }
+    Then LGetField (LDeref (LId '$global'), 'v') returns the *reference* to {'name': 'liwei', 'answer': 42}
+    To obtain the primitive value 'liwei', 
+    LGetField (LDeref (LGetField (LDeref (LId '$global'), 'v')), 'name') is used.
+
+
+    Context
+    =======
+    The context structure is (string * bool) list:
+    [<variable_name_1, assignable_or_not>, <name_2, assignable_or_not>, ... ]
+
+    Since all global variables are field for '$global', if we can't find it in context, then
+    we can tell it's a global variable.
+
+    All local variables and arguments are in the context. Then it's easy to manage scope --
+        create new context by adding new name to pervious context when entering a function / block;
+        continue use previous one when exit the function / block.
+
+    We can also use this way to distinguish them from global ones.
+
+    In fact, arguments are newly allocated reference to the actually passed one.
+    So they're reference to reference in most case. 
+    We design so for re-binding argument to new values.
+    
+*)
 
 type lexpr = 
     | LId of string
@@ -119,7 +159,9 @@ desguar_property_expression (ctx: (string * bool) list) (e: (Loc.t, Loc.t) Flow_
     match idx with 
     | LNum num -> LString (string_of_int (int_of_float num))
     | LString _ -> idx
-    | _ -> raise @@ Failure "Unsupported member property expression"
+    | LGetField _ -> LApp (LId "prim->string" , [idx])
+    | LDeref _ -> LApp (LId "prim->string" , [idx])
+    | _ -> raise @@ Failure ("Unsupported member property expression" ^ (s_expr idx))
 
 and
 

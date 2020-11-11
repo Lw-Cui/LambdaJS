@@ -9,5 +9,10 @@
 )
 
 ; To run this set example main binary (inserting appropriate string and file):
-; dune exec ./src/set_main.exe <string> <file>
+; dune exec ./src/lab.exe
 
+(executable
+ (name lab)
+ (modules lab)
+ (libraries desugar)
+)
