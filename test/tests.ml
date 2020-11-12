@@ -3,7 +3,7 @@ open OUnit2
 
 let tests = "test suite for desugar" >::: [
   "dictionary" >:: (fun _ -> assert_equal 
-    (desguar_code "
+    (desugar_code "
         var v = {'name': 'liwei', 'answer': 42}; 
         var c = 5, b = 6;
         print (v['name']) 
@@ -13,7 +13,7 @@ let tests = "test suite for desugar" >::: [
   );
 
   "field" >:: (fun _ -> assert_equal
-    (desguar_code "
+    (desugar_code "
         var v = {'name': 'liwei', 'answer': 42}; 
         v['name'] = 5;
         print (v['name']);
@@ -25,7 +25,7 @@ let tests = "test suite for desugar" >::: [
   );
 
   "assignment" >:: (fun _ -> assert_equal
-    (desguar_code "
+    (desugar_code "
         var x = {'a': 'b'};
         x = {'x': 'x'};
         print (x['x']);
@@ -34,7 +34,7 @@ let tests = "test suite for desugar" >::: [
   );
 
   "big!" >:: (fun _ -> assert_equal
-    (desguar_code "
+    (desugar_code "
         function proc(x) {
             print ('')
             print ('enter <proc>');
@@ -75,7 +75,7 @@ let tests = "test suite for desugar" >::: [
   );
 
   "function" >:: (fun _ -> assert_equal
-    (desguar_code "
+    (desugar_code "
         function proc(x) {
             x = {'b': 'a'};
             print (x['b']);
@@ -89,7 +89,7 @@ let tests = "test suite for desugar" >::: [
   );
 
   "calc" >:: (fun _ -> assert_equal
-    (desguar_code "
+    (desugar_code "
         var k = 72;
         var c = k + 12;
         print (c / 2);
@@ -99,7 +99,7 @@ let tests = "test suite for desugar" >::: [
   );
 
   "literal" >:: (fun _ -> assert_equal
-    (desguar_code "
+    (desugar_code "
         var k = {'v': 63, 'x': {'y': 42}};
         k.v += 1;
         k['v'] /= (1 + 1);
@@ -111,7 +111,7 @@ let tests = "test suite for desugar" >::: [
    );
 
   "remove array" >:: (fun _ -> assert_equal
-    (desguar_code "
+    (desugar_code "
         var k = [1, 'liwei', 3];
         print (k[1]);
         delete k[1];
@@ -125,7 +125,7 @@ let tests = "test suite for desugar" >::: [
   );
 
   "array property idx" >:: (fun _ -> assert_equal
-    (desguar_code "
+    (desugar_code "
       function proc(arr, pos) {
           print (arr[pos]);
       }

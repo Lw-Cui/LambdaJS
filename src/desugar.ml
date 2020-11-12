@@ -469,7 +469,7 @@ let set_env (expr: lexpr) : lexpr =
     ))
 ;;
 
-let desguar_code (code: string) =
+let desugar_code (code: string) =
     let ast: lexpr = set_env @@ desugar @@ Parser_flow.program code in
     s_expr ast
 ;;
