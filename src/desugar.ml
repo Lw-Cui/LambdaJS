@@ -155,7 +155,7 @@ desugar_object (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expression.Object.t): 
 
 and
 
-desguar_property_expression (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expression.t): lexpr =
+desugar_property_expression (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expression.t): lexpr =
     let idx = desugar_expr ctx e in
     match idx with 
     | LNum num -> LString (string_of_int (int_of_float num))
@@ -171,7 +171,7 @@ desugar_member (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expression.Member.t): 
     let obj = desugar_expr ctx _object in
     match property with
     | PropertyExpression pe -> 
-        let idx = desguar_property_expression ctx pe in
+        let idx = desugar_property_expression ctx pe in
         LGetField (LDeref obj, idx)
     | PropertyIdentifier pd -> 
         let id = desugar_identifer_name ctx pd in
