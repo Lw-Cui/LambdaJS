@@ -57,6 +57,7 @@ type lexpr =
     | LBreak of string * lexpr 
     | LLabel of (string * lexpr)
     | LApp of lexpr * lexpr list
+    | LIf of lexpr * lexpr * lexpr
 ;;
 
 
@@ -107,6 +108,7 @@ s_expr (e: lexpr): string =
     | LLambda (args, block) -> parens3 "lambda" (parens1 (String.concat " " args)) (s_expr block)
     | LBreak (label, expr) -> parens4 "break" label " " (s_expr expr)
     | LLabel (label, expr) -> parens4 "label" label " " (s_expr expr)
+    | LIf (cond, t, f) -> parens4 "if" (s_expr cond) (s_expr t) (s_expr f)
 ;;
 
 let rec to_string (e: lexpr) : string = 
@@ -409,7 +411,7 @@ desugar_func_params (ctx: context) (p: (Loc.t, Loc.t) Flow_ast.Function.Params.t
 
 and
 
-desugar_stmt_block (ctx: context) (block: (Loc.t, Loc.t) Flow_ast.Statement.Block.t): lexpr =
+desugar_block (ctx: context) (block: (Loc.t, Loc.t) Flow_ast.Statement.Block.t): lexpr =
     match block with {body = body; _} ->
     List.fold_right (fun l r -> LSeq (l, r)) (List.map (desugar_stmt ctx) body) LUndefined
 
@@ -417,7 +419,7 @@ and
 
 desugar_func_body (ctx: context) (body: (Loc.t, Loc.t) Flow_ast.Function.body): lexpr =
     match body with
-    | BodyBlock (_, block) -> desugar_stmt_block ctx block
+    | BodyBlock (_, block) -> desugar_block ctx block
     | _ -> raise @@ Failure "Only BodyBlock is supported"
 
 and
@@ -446,6 +448,18 @@ desugar_return (ctx: context) (ret: (Loc.t, Loc.t) Flow_ast.Statement.Return.t):
 
 and
 
+desugar_if (ctx: context) (if_stmt: (Loc.t, Loc.t) Flow_ast.Statement.If.t): lexpr =
+    match if_stmt with {test = test; consequent = consequent; alternate = alternate; _} ->
+    let cond = desugar_expr ctx test in
+    let true_stmt = desugar_stmt ctx consequent in
+    match alternate with
+    | Some (_, alt) -> 
+        (match alt with {body = body; _} -> 
+        let false_stmt = desugar_stmt ctx body in
+        LIf (cond, true_stmt, false_stmt))
+    | None -> LIf (cond, true_stmt, LUndefined)
+
+and
 
 (* statement is the top level element in js *)
 desugar_stmt (ctx: context) (stmt: (Loc.t, Loc.t) Flow_ast.Statement.t): lexpr =
@@ -455,6 +469,8 @@ desugar_stmt (ctx: context) (stmt: (Loc.t, Loc.t) Flow_ast.Statement.t): lexpr =
     | Expression expr ->  desugar_expr ctx expr.expression
     | FunctionDeclaration func ->  desugar_func ctx func
     | Return ret ->  desugar_return ctx ret
+    | If if_stmt -> desugar_if ctx if_stmt
+    | Block bk -> desugar_block ctx bk
     | _ -> raise @@ Failure "Only VariableDeclaration is supported"
 
 and
