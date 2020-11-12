@@ -305,11 +305,21 @@ and
 
 desugar_binary (ctx: (string * bool) list) (e: (Loc.t, Loc.t) Flow_ast.Expression.Binary.t): lexpr =
     match e with {operator = operator; left = left; right = right; _} ->
+    let l = desugar_expr ctx left in
+    let r = desugar_expr ctx right in
+    let ops = [l; r] in
     match operator with
-    | Plus -> LApp ((LId "+"), [(desugar_expr ctx left); (desugar_expr ctx right)])
-    | Minus -> LApp ((LId "-"), [(desugar_expr ctx left); (desugar_expr ctx right)])
-    | Mult -> LApp ((LId "*"), [(desugar_expr ctx left); (desugar_expr ctx right)])
-    | Div -> LApp ((LId "/"), [(desugar_expr ctx left); (desugar_expr ctx right)])
+    | Plus -> LApp ((LId "+"), ops)
+    | Minus -> LApp ((LId "-"), ops)
+    | Mult -> LApp ((LId "*"), ops)
+    | Div -> LApp ((LId "/"), ops)
+    | Mod -> LApp ((LId "%"), ops)
+    | Equal -> LApp ((LId "=="), ops)
+    | NotEqual -> LApp ((LId "!="), ops)
+    | LessThan -> LApp ((LId "<"), ops)
+    | LessThanEqual -> LApp ((LId "<="), ops)
+    | GreaterThan -> LApp ((LId ">"), ops)
+    | GreaterThanEqual -> LApp ((LId ">="), ops)
     | _ -> raise @@ Failure "Unsupported expression"
 
 and 
