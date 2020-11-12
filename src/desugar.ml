@@ -58,6 +58,7 @@ type lexpr =
     | LLabel of (string * lexpr)
     | LApp of lexpr * lexpr list
     | LIf of lexpr * lexpr * lexpr
+    | LBool of bool
 ;;
 
 
@@ -109,6 +110,7 @@ s_expr (e: lexpr): string =
     | LBreak (label, expr) -> parens4 "break" label " " (s_expr expr)
     | LLabel (label, expr) -> parens4 "label" label " " (s_expr expr)
     | LIf (cond, t, f) -> parens4 "if" (s_expr cond) (s_expr t) (s_expr f)
+    | LBool v -> match v with true -> "#t" | false -> "#f"
 ;;
 
 let rec to_string (e: lexpr) : string = 
@@ -318,7 +320,7 @@ desugar_binary (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expression.Binary.t): 
     | Div -> LApp ((LId "/"), ops)
     | Mod -> LApp ((LId "%"), ops)
     | Equal -> LApp ((LId "=="), ops)
-    | NotEqual -> LApp ((LId "!="), ops)
+    | NotEqual -> LIf (LApp ((LId "=="), ops), (LBool false), (LBool true)) 
     | LessThan -> LApp ((LId "<"), ops)
     | LessThanEqual -> LApp ((LId "<="), ops)
     | GreaterThan -> LApp ((LId ">"), ops)
