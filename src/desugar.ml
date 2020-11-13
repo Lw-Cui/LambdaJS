@@ -452,7 +452,7 @@ and
 
 desugar_if (ctx: context) (if_stmt: (Loc.t, Loc.t) Flow_ast.Statement.If.t): lexpr =
     match if_stmt with {test = test; consequent = consequent; alternate = alternate; _} ->
-    let cond = desugar_expr ctx test in
+    let cond = LApp (LId "prim->bool", [desugar_expr ctx test]) in
     let true_stmt = desugar_stmt ctx consequent in
     match alternate with
     | Some (_, alt) -> 
