@@ -155,7 +155,7 @@ let tests = "test suite for desugar" >::: [
       print (c);
     ")
 
-    {| (let  ( ($global  (alloc  (object ) ) ) )   (let  ( (@Object_prototype  (alloc  (object ) ) ) )   (begin  (begin  (set! $global  (update-field  (deref $global)  "c"  5.) )  undefined)   (begin  (if  (==  (get-field  (deref $global)  "c")  5.)   (begin  (print-string  (prim->string "add") )   (begin  (set! $global  (update-field  (deref $global)  "c"  (+  (get-field  (deref $global)  "c")  1.) ) )  undefined) )   (begin  (print-string  (prim->string "minus") )   (begin  (set! $global  (update-field  (deref $global)  "c"  (-  (get-field  (deref $global)  "c")  1.) ) )  undefined) ) )   (begin  (print-string  (prim->string  (get-field  (deref $global)  "c") ) )  undefined) ) ) ) ) |}
+    {| (let  ( ($global  (alloc  (object ) ) ) )   (let  ( (@Object_prototype  (alloc  (object ) ) ) )   (begin  (begin  (set! $global  (update-field  (deref $global)  "c"  5.) )  undefined)   (begin  (if  (prim->bool  (==  (get-field  (deref $global)  "c")  5.) )   (begin  (print-string  (prim->string "add") )   (begin  (set! $global  (update-field  (deref $global)  "c"  (+  (get-field  (deref $global)  "c")  1.) ) )  undefined) )   (begin  (print-string  (prim->string "minus") )   (begin  (set! $global  (update-field  (deref $global)  "c"  (-  (get-field  (deref $global)  "c")  1.) ) )  undefined) ) )   (begin  (print-string  (prim->string  (get-field  (deref $global)  "c") ) )  undefined) ) ) ) ) |}
   );
 
   "if statement - not equal" >:: (fun _ -> assert_equal
@@ -167,7 +167,19 @@ let tests = "test suite for desugar" >::: [
       print (c);
     ")
 
-    {| (let  ( ($global  (alloc  (object ) ) ) )   (let  ( (@Object_prototype  (alloc  (object ) ) ) )   (begin  (begin  (set! $global  (update-field  (deref $global)  "c"  5.) )  undefined)   (begin  (if  (if  (==  (get-field  (deref $global)  "c")  7.)  #f #t)   (begin  (print-string  (prim->string "add") )   (begin  (set! $global  (update-field  (deref $global)  "c"  (+  (get-field  (deref $global)  "c")  1.) ) )  undefined) )  undefined)   (begin  (print-string  (prim->string  (get-field  (deref $global)  "c") ) )  undefined) ) ) ) ) |}
+    {| (let  ( ($global  (alloc  (object ) ) ) )   (let  ( (@Object_prototype  (alloc  (object ) ) ) )   (begin  (begin  (set! $global  (update-field  (deref $global)  "c"  5.) )  undefined)   (begin  (if  (prim->bool  (if  (==  (get-field  (deref $global)  "c")  7.)  #f #t) )   (begin  (print-string  (prim->string "add") )   (begin  (set! $global  (update-field  (deref $global)  "c"  (+  (get-field  (deref $global)  "c")  1.) ) )  undefined) )  undefined)   (begin  (print-string  (prim->string  (get-field  (deref $global)  "c") ) )  undefined) ) ) ) ) |}
+  );
+
+  "while statement" >:: (fun _ -> assert_equal
+    (desugar_code "
+        var c = 5;
+        while (c > 3) {
+            print ('add'); c -= 1;
+        }
+        print (c);
+    ")
+
+    {| (let  ( ($global  (alloc  (object ) ) ) )   (let  ( (@Object_prototype  (alloc  (object ) ) ) )   (begin  (begin  (set! $global  (update-field  (deref $global)  "c"  5.) )  undefined)   (begin  (label $break    (while  (prim->bool  (if  (if  (<  (get-field  (deref $global)  "c")  3.)  #t  (==  (get-field  (deref $global)  "c")  3.) )  #f #t) )   (label $continue    (begin  (print-string  (prim->string "add") )   (begin  (set! $global  (update-field  (deref $global)  "c"  (-  (get-field  (deref $global)  "c")  1.) ) )  undefined) ) ) ) )   (begin  (print-string  (prim->string  (get-field  (deref $global)  "c") ) )  undefined) ) ) ) ) |}
   );
 ]
 

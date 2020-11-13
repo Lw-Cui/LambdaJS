@@ -59,6 +59,7 @@ type lexpr =
     | LApp of lexpr * lexpr list
     | LIf of lexpr * lexpr * lexpr
     | LBool of bool
+    | LWhile of lexpr * lexpr
 ;;
 
 
@@ -110,7 +111,8 @@ s_expr (e: lexpr): string =
     | LBreak (label, expr) -> parens4 "break" label " " (s_expr expr)
     | LLabel (label, expr) -> parens4 "label" label " " (s_expr expr)
     | LIf (cond, t, f) -> parens4 "if" (s_expr cond) (s_expr t) (s_expr f)
-    | LBool v -> match v with true -> "#t" | false -> "#f"
+    | LBool v -> (match v with true -> "#t" | false -> "#f")
+    | LWhile (cond, stmt) -> parens3 "while" (s_expr cond) (s_expr stmt)
 ;;
 
 let rec to_string (e: lexpr) : string = 
@@ -313,18 +315,21 @@ desugar_binary (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expression.Binary.t): 
     let l = desugar_expr ctx left in
     let r = desugar_expr ctx right in
     let ops = [l; r] in
+    let _not comp = LIf (comp, LBool false, LBool true) in
+    let _and c1 c2 = LIf (c1, c2, LBool false) in
+    let _or c1 c2 = LIf (c1, LBool true, c2) in
     match operator with
-    | Plus -> LApp ((LId "+"), ops)
-    | Minus -> LApp ((LId "-"), ops)
-    | Mult -> LApp ((LId "*"), ops)
-    | Div -> LApp ((LId "/"), ops)
-    | Mod -> LApp ((LId "%"), ops)
-    | Equal -> LApp ((LId "=="), ops)
-    | NotEqual -> LIf (LApp ((LId "=="), ops), (LBool false), (LBool true)) 
-    | LessThan -> LApp ((LId "<"), ops)
-    | LessThanEqual -> LApp ((LId "<="), ops)
-    | GreaterThan -> LApp ((LId ">"), ops)
-    | GreaterThanEqual -> LApp ((LId ">="), ops)
+    | Plus -> LApp (LId "+", ops)
+    | Minus -> LApp (LId "-", ops)
+    | Mult -> LApp (LId "*", ops)
+    | Div -> LApp (LId "/", ops)
+    | Mod -> LApp (LId "%", ops)
+    | Equal -> LApp (LId "==", ops)
+    | NotEqual -> _not (LApp (LId "==", ops))
+    | LessThan -> LApp (LId "<", ops)
+    | LessThanEqual -> _or (LApp (LId "<", ops)) (LApp (LId "==", ops))
+    | GreaterThan -> _not (_or (LApp (LId "<", ops)) (LApp (LId "==", ops)))
+    | GreaterThanEqual -> _not (LApp (LId "<", ops))
     | _ -> raise @@ Failure "Unsupported expression"
 
 and 
@@ -463,6 +468,14 @@ desugar_if (ctx: context) (if_stmt: (Loc.t, Loc.t) Flow_ast.Statement.If.t): lex
 
 and
 
+desugar_while (ctx: context) (wh: (Loc.t, Loc.t) Flow_ast.Statement.While.t): lexpr =
+    match wh with {test = test; body = body; _} ->
+    let cond = LApp (LId "prim->bool", [desugar_expr ctx test]) in
+    let stmt = desugar_stmt ctx body in
+    LLabel ("$break", LWhile (cond, LLabel ("$continue", stmt)))
+
+and
+
 (* statement is the top level element in js *)
 desugar_stmt (ctx: context) (stmt: (Loc.t, Loc.t) Flow_ast.Statement.t): lexpr =
     let stmt' = snd stmt in
@@ -473,6 +486,7 @@ desugar_stmt (ctx: context) (stmt: (Loc.t, Loc.t) Flow_ast.Statement.t): lexpr =
     | Return ret ->  desugar_return ctx ret
     | If if_stmt -> desugar_if ctx if_stmt
     | Block bk -> desugar_block ctx bk
+    | While wh -> desugar_while ctx wh
     | _ -> raise @@ Failure "Only VariableDeclaration is supported"
 
 and
