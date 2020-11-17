@@ -38,16 +38,15 @@ print_string @@
     }
 
     function do_sort (array, left, right) {
-        if (array.length <= 1) return array;
-        if (left + 1 >= right) return array;
+        if (array.length <= 1 || left + 1 >= right) return;
         var idx = partition (array, left, right);
         do_sort (array, left, idx - 1);
         do_sort (array, idx, right);
-        return array;
     }
 
     function quicksort (array) {
-        return do_sort (array, 0, array.length - 1);
+        do_sort (array, 0, array.length - 1);
+        return array;
     }
 
     var array = [5,3,7,6,2,9];

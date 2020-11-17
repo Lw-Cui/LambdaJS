@@ -348,8 +348,20 @@ desugar_array (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expression.Array.t): le
     let len = List.length elements in
     LAlloc (LObject (("$class", LString "Array") :: ("length", LNum (float_of_int len))
         :: (List.map2 (desugar_array_element ctx) (range 0 len) elements)))
+and
+
+desugar_logical (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expression.Logical.t): lexpr =
+    match e with {operator = operator; left = left; right = right; _} ->
+    let l = LApp (LId "prim->bool", [desugar_expr ctx left]) in
+    let r = LApp (LId "prim->bool", [desugar_expr ctx right]) in
+    match operator with
+    | Or ->  LIf (l, LBool true, r)
+    | And ->  LIf (l, r, LBool false)
+    | _ ->  raise @@ Failure "Unsupported logical"
+
 
 and
+
 desugar_expr (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expression.t): lexpr =
     let e' = snd e in 
     match e' with
@@ -361,6 +373,7 @@ desugar_expr (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expression.t): lexpr =
     | Call c -> desugar_call ctx c
     | Unary op -> desugar_unary ctx op
     | Binary op -> desugar_binary ctx op
+    | Logical op -> desugar_logical ctx op
     | Array arr -> desugar_array ctx arr
     | _ -> raise @@ Failure "Unsupported expression"
 
@@ -453,7 +466,7 @@ desugar_return (ctx: context) (ret: (Loc.t, Loc.t) Flow_ast.Statement.Return.t):
     match ret with {argument = arguments; _} ->
     match arguments with
     | Some expr -> LBreak ("$return", (desugar_expr ctx expr))
-    | None -> raise @@ Failure "Only return value is supported"
+    | None -> LBreak ("$return", LUndefined)
 
 and
 
