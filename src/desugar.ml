@@ -344,8 +344,9 @@ and
 desugar_array (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expression.Array.t): lexpr =
     let rec range i j = if i >= j then [] else i :: (range (i + 1) j) in
     match e with {elements = elements; _} ->
-    LAlloc (LObject (("$class", LString "Array") 
-        :: (List.map2 (desugar_array_element ctx) (range 0 (List.length elements)) elements)))
+    let len = List.length elements in
+    LAlloc (LObject (("$class", LString "Array") :: ("length", LNum (float_of_int len))
+        :: (List.map2 (desugar_array_element ctx) (range 0 len) elements)))
 
 and
 desugar_expr (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expression.t): lexpr =
