@@ -168,6 +168,7 @@ desugar_property_expression (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expressio
     | LString _ -> idx
     | LGetField _ -> LApp (LId "prim->string" , [idx])
     | LDeref _ -> LApp (LId "prim->string" , [idx])
+    | LApp _ -> LApp (LId "prim->string", [idx])
     | _ -> raise @@ Failure ("Unsupported member property expression" ^ (s_expr idx))
 
 and
