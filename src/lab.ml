@@ -15,11 +15,10 @@ print_string @@
     }
 
     function mid (left, right) {
-        if ((left + right) % 2) {
+        if ((left + right) % 2) 
             return (left + right - 1) / 2;
-        } else {
+        else 
             return (left + right) / 2;
-        }
     }
 
     function partition (array, left, right) {
@@ -38,17 +37,21 @@ print_string @@
         return left;
     }
 
-    function quicksort (array, left, right) {
+    function do_sort (array, left, right) {
         if (array.length <= 1) return array;
         if (left + 1 >= right) return array;
         var idx = partition (array, left, right);
-        quicksort (array, left, idx - 1);
-        quicksort (array, idx, right);
+        do_sort (array, left, idx - 1);
+        do_sort (array, idx, right);
         return array;
     }
 
+    function quicksort (array) {
+        return do_sort (array, 0, array.length - 1);
+    }
+
     var array = [5,3,7,6,2,9];
-    quicksort (array, 0, array.length - 1);
-    print_array (array);
+    var sorted = quicksort (array);
+    print_array (sorted);
     
 ") ^ "\n"
