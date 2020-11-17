@@ -14,31 +14,24 @@ print_string @@
         array[right] = temp;
     }
 
-    function mid (left, right) {
-        if ((left + right) % 2) 
-            return (left + right - 1) / 2;
-        else 
-            return (left + right) / 2;
-    }
-
     function partition (array, left, right) {
-        var pivot = array[mid(left, right)];
+        var pivot = array[right];
+        var low = left, high = left;
 
-        while (left < right) {
-            while (array[left] < pivot) left += 1;
-            while (array[right] > pivot) right -= 1;
-
-            if (left < right) {
-                swap (array, left, right);
-                left += 1;
-                right -= 1;
+        while (high <= right - 1) {
+            if (array[high] <= pivot) {
+                swap (array, low, high);
+                low += 1;
             }
+            high += 1;
         }
-        return left;
+
+        swap (array, low, right);
+        return low;
     }
 
     function do_sort (array, left, right) {
-        if (array.length <= 1 || left + 1 >= right) return;
+        if (array.length <= 1 || left >= right) return;
         var idx = partition (array, left, right);
         do_sort (array, left, idx - 1);
         do_sort (array, idx, right);
@@ -49,7 +42,7 @@ print_string @@
         return array;
     }
 
-    var array = [5,3,7,6,2,9];
+    var array = [6, 3, 7, 8, 10, 0, 2, 3, 34, 42, 1];
     var sorted = quicksort (array);
     print_array (sorted);
     
