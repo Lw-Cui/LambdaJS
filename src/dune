@@ -2,17 +2,11 @@
 ; `dune utop`
 ; or an equivalent means is to start utop and enter `#use_output "dune top";;`
 
-(library
- (name desugar)
- (modules desugar) 
- (libraries ppx_deriving.runtime flow_parser)
-)
-
 ; To run this set example main binary (inserting appropriate string and file):
-; dune exec ./src/lab.exe
+; dune exec ./src/driver.exe
 
 (executable
- (name lab)
- (modules lab)
+ (name translate)
+ (modules translate)
  (libraries desugar)
 )
