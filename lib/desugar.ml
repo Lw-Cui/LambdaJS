@@ -375,6 +375,7 @@ desugar_expr (ctx: context) (e: (Loc.t, Loc.t) Flow_ast.Expression.t): lexpr =
     | Binary op -> desugar_binary ctx op
     | Logical op -> desugar_logical ctx op
     | Array arr -> desugar_array ctx arr
+    | Function func -> desugar_func ctx func
     | _ -> raise @@ Failure "Unsupported expression"
 
 and
@@ -413,7 +414,7 @@ and
 desugar_func_id (_: context) (id: (Loc.t, Loc.t) Flow_ast.Identifier.t option): string =
     match id with 
     | Some (_, id') -> (match id' with {name = name; _} -> name)
-    | None -> raise @@ Failure "Function must have id"
+    | None -> ""
 
 and
 
@@ -458,7 +459,9 @@ desugar_func (ctx: context) (func: (Loc.t, Loc.t) Flow_ast.Function.t): lexpr =
     let alloc = List.map allocate_param params' in
     let body' = desugar_func_body (params' @ ctx) body in
     let lambda = LLambda ("this" :: (List.map fst params'), LLet (alloc, LLabel ("$return", body'))) in
-    LSet (LId "$global", (LUpdateField (LDeref (LId "$global"), LString id', lambda)))
+    match id' with
+    | "" -> lambda
+    | _ -> LSet (LId "$global", (LUpdateField (LDeref (LId "$global"), LString id', lambda)))
 
 and
 
