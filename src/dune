@@ -1,9 +1,5 @@
-; To load libraries in a fresh utop top loop use command line
-; `dune utop`
-; or an equivalent means is to start utop and enter `#use_output "dune top";;`
-
 ; To run this set example main binary (inserting appropriate string and file):
-; dune exec ./src/driver.exe
+; dune exec ./src/translate.exe
 
 (executable
  (name translate)
