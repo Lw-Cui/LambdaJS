@@ -32,7 +32,7 @@ dune runtest    # and run all unit tests!
 
 ## Run
 
-You can translate JS in `example/qsort.js` and run generated lambdaJS directly by:
+You can translate JS in [example/qsort.js](./examples/qsort.js) and run generated lambdaJS directly by:
 ```
 cat ./examples/qsort.js | dune exec ./src/translate.exe | ./interp/interp-shell.ss  
 ```
