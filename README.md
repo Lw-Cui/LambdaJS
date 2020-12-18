@@ -37,19 +37,19 @@ You can translate JS in `example/qsort.js` and run generated lambdaJS directly b
 cat ./examples/qsort.js | dune exec ./src/translate.exe | ./interp/interp-shell.ss  
 ```
 
-`dune exec` completes pipeline 1-3 and `interp-shell` finish pipeline 4.
+`dune exec` completes pipeline 1-3 and `interp-shell` finishes pipeline 4.
 
 Below lists supported feature with code snippet. All of them are in `example` directory. You can replace the js file in above command and run it.
 
-* Arithmetic: `arithmetic.js`
-* If statement: `condition.js`
-  * Without alternative: `simple_cond.js`
-* While statement: `while.js`
-* Array: `array.js`
-  * Array index: `array_index.js`
-* Dictionary: `dict.js`
-  * Delete ops: `dict_delete.js`
-  * Field manipulation: `arithmetic_dict.js`
-* Function: `argument_passing.js`
-  * Function argument: `argument_changing.js`
-  * High-order function: `high_order.js`
+* Arithmetic: [arithmetic.js](./example/arithmetic.js)
+* If statement: [condition.js](./example/condition.js)
+  * Without alternative: [simple_cond.js](./examples/simple_cond.js)
+* While statement: [while.js](./examples/while.js)
+* Array: [array.js](./examples/array.js)
+  * Array index: [array_index.js](./examples/array_index.js)
+* Dictionary: [dict.js](./examples/dict.js)
+  * Delete ops: [dict_delete.js](./examples/dict_delete.js)
+  * Field manipulation: [arithmetic_dict.js](./examples/arithmetic_dict.js)
+* Function: [argument_passing.js](./examples/argument_passing.js)
+  * Function argument: [argument_changing.js](./examples/argument_changing.js)
+  * High-order function: [high_order.js](./examples/high_order.js)
