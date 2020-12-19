@@ -1,7 +1,7 @@
 # LambdaJS
 
 LambdaJS is small, tested, reduction semantics for JavaScript. It was proposal by
-Brown PLT group in 2010. See their [paper](http://cs.brown.edu/~sk/Publications/Papers/Published/gsk-essence-javascript/). 
+Brown PLT group in 2010. Read their [paper](http://cs.brown.edu/~sk/Publications/Papers/Published/gsk-essence-javascript/). 
 
 This repo reproduces the translation (*"desguar"*) between JavaScript and LambdaJS using **Ocaml**.
 
@@ -12,13 +12,13 @@ This repo reproduces the translation (*"desguar"*) between JavaScript and Lambda
 1. JavaScript is processed by [Flow Parser](https://flow.org/) first to generate [JS AST](https://github.com/facebook/flow/blob/master/src/parser/flow_ast.ml). 
 2. The translation is working on the JS AST, and the output is [LambdaJS AST](https://github.com/Lw-Cui/lambdaJS/blob/master/lib/desugar.ml). That is the core part of this repo.
 3. A small utility is written to serialize the LambdaJS AST to S-expression.
-4. LambdaJS S-expression interpreter is adopted from original LambdaJS [codebase](https://github.com/brownplt/LambdaJS), hence the desugar result can be executed and tested directly.
+4. LambdaJS S-expression interpreter is from original LambdaJS [codebase](https://github.com/brownplt/LambdaJS). The desugar result can be executed and tested directly by it.
 
 ## Build
 
-Please install `opam` (OCaml >= v4.07) and `Racket`(>= v7.2) first. You can find guide for `opam` [here](https://pl.cs.jhu.edu/fpse/coding.html).
+Please install `opam`, `OCaml (>= 4.07)` and `Racket(>= 7.2)` first. You can find guide for installing `opam` [here](https://pl.cs.jhu.edu/fpse/coding.html).
 
-Then install necessary libraries:
+Then a few third-party libraries are necessary:
 ```
 opam install merlin user-setup menhir utop ppx_deriving ounit2 qcheck
 opam pin add flow_parser https://github.com/facebook/flow.git
@@ -26,7 +26,7 @@ opam pin add flow_parser https://github.com/facebook/flow.git
 
 Finally,
 ```
-dune build      # build the lib
+dune build      # build the repo
 dune runtest    # and run all unit tests!
 ```
 
@@ -37,9 +37,9 @@ You can translate JS in [example/qsort.js](./examples/qsort.js) and run generate
 cat ./examples/qsort.js | dune exec ./src/translate.exe | ./interp/interp-shell.ss  
 ```
 
-`dune exec` completes pipeline 1-3 and `interp-shell` finishes pipeline 4.
+`dune exec` completes pipeline step 1-3 and `interp-shell` finishes pipeline step 4. The output is written to `stdout`.
 
-Below lists supported feature with code snippet. All of them are in `example` directory. You can replace the js file in above command and run it.
+Below lists supported feature. All of them are in `example` directory. You can replace the js file in above command and run it directly.
 
 * Arithmetic: [arithmetic.js](./example/arithmetic.js)
 * If statement: [condition.js](./example/condition.js)
