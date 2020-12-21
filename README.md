@@ -54,7 +54,7 @@ Below lists supported feature. All of them are in `example` directory. You can r
   * Function argument: [argument_changing.js](./examples/argument_changing.js)
   * High-order function: [high_order.js](./examples/high_order.js)
 
-  ## TODO
+## TODO
 
   * Support prototype chain, and other interesting syntax.
   * Added black-box tests to check output of interpreter, rather than S-expression.
