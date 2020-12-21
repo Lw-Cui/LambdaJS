@@ -41,8 +41,8 @@ cat ./examples/qsort.js | dune exec ./src/translate.exe | ./interp/interp-shell.
 
 Below lists supported feature with code snippet. All of them are in `example` directory. You can replace the js file in above command and run it.
 
-* Arithmetic: [arithmetic.js](./example/arithmetic.js)
-* If statement: [condition.js](./example/condition.js)
+* Arithmetic: [arithmetic.js](./examples/arithmetic.js)
+* If statement: [condition.js](./examples/condition.js)
   * Without alternative: [simple_cond.js](./examples/simple_cond.js)
 * While statement: [while.js](./examples/while.js)
 * Array: [array.js](./examples/array.js)
@@ -53,3 +53,9 @@ Below lists supported feature with code snippet. All of them are in `example` di
 * Function: [argument_passing.js](./examples/argument_passing.js)
   * Function argument: [argument_changing.js](./examples/argument_changing.js)
   * High-order function: [high_order.js](./examples/high_order.js)
+
+  ## TODO
+
+  * Support prototype chain, and other interesting syntax.
+  * Added black-box tests to check output of interpreter, rather than S-expression.
+  * Brown University proposed [S5](https://cs.brown.edu/~sk/Publications/Papers/Published/pclpk-s5-semantics/), an extension for LambdaJS with ES5 support. Maybe we can learn something from it.
